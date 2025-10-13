@@ -1,2 +1,2 @@
 path:
-  csv_data: "files/yellow_tripdata_2021-01.csv"
+  csv_data: "source_files/yellow_tripdata_2021-01.csv"

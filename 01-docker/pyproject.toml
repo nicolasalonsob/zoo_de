@@ -8,7 +8,7 @@ dependencies = [
     "loguru>=0.7.3",
     "pandas>=2.3.3",
     "pgcli>=4.3.0",
-    "psycopg2>=2.9.11",
+    "psycopg2-binary>=2.9.11",
     "pyyaml>=6.0.3",
     "sqlalchemy>=2.0.43",
 ]

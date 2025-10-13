@@ -37,7 +37,7 @@ def transform_chunk(df):
 
 def run(config, params):
     sql_engine = create_sql_engine(params)
-    chunk_size = 1000000
+    chunk_size = 100000
     table_name = params.table_name
     csv_path = config["path"]["csv_data"]
 
@@ -51,15 +51,25 @@ def run(config, params):
     first_chunk.head(0).to_sql(
         name=table_name, con=sql_engine, if_exists="replace", index=False
     )
-    first_chunk.to_sql(name=table_name, con=sql_engine, if_exists="append", index=False)
 
-    # Stream remaining chunks
+    chunk_counter = 0
+    t_start = time()
+    first_chunk.to_sql(name=table_name, con=sql_engine, if_exists="append", index=False)
+    t_end = time()
+    chunk_counter += 1
+    logger.info(
+        f"Chunk number:{chunk_counter} inserted in t:{(t_end - t_start)} second"
+    )
+
     for chunk in df_iter:
+        chunk_counter += 1
         t_start = time()
         chunk = transform_chunk(chunk)
         chunk.to_sql(name=table_name, con=sql_engine, if_exists="append", index=False)
         t_end = time()
-        logger.info(f"Chunk inserted in t:{(t_end - t_start)} second")
+        logger.info(
+            f"Chunk number:{chunk_counter} inserted in t:{(t_end - t_start)} second"
+        )
 
     logger.info("CSV ingestion completed successfully.")
 

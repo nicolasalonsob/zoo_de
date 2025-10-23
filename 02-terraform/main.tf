@@ -8,13 +8,14 @@ terraform {
 }
 
 provider "google" {
-  project = "nytaxi-475716"
-  region  = "europe-west1"
+  credentials = file(var.credentials)
+  project = var.project_name
+  region  = var.region
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "nytaxi-475716-terraform-test"
-  location      = "EUROPE-WEST1"
+  name          = var.bucket_name
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {

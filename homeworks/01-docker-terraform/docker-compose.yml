@@ -1,0 +1,31 @@
+services:
+  pg_db:
+    image: postgres
+    ports: 
+      - "5432:5432"
+    volumes:
+      - ./taxi_data:/var/lib/postgres/data 
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: taxidb
+
+  pg_admin:
+    image: dpage/pgadmin4
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@example.com
+      PGADMIN_DEFAULT_PASSWORD: root 
+    depends_on:
+      - pg_db 
+
+  ingest_script:
+    build: .
+    depends_on:
+      - pg_db 
+
+
+
+
+

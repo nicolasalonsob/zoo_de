@@ -9,9 +9,9 @@ from sqlalchemy import Engine
 
 
 class Config(BaseModel):
-    file_name:str
-    url:str
-    provider:str
+    file_name: str
+    url: str
+    provider: str
     postgres_user: str
     postgres_psw: str
     postgres_host: str
@@ -30,7 +30,7 @@ def get_file(url: str, file_name: str) -> None:
         raise
 
 
-def file_to_df_iter(file_name: str, chunk_size:int=100000) -> Iterable:
+def file_to_df_iter(file_name: str, chunk_size: int = 100000) -> Iterable:
     readers = {
         ".csv": pd.read_csv,
         ".parqut": pd.read_parquet,
@@ -90,31 +90,37 @@ class SqlEngine:
         except Exception as e:
             logger.error(f"Failed inserting df into {table_name} with error: {e}")
 
+
 class Pipeline:
-    def __init__(self, config:Config) -> None:
+    def __init__(self, config: Config) -> None:
         self.config = config
         self.sql = SqlEngine(
-            provider=config.provider, 
-            host=config.host, 
+            provider=config.provider,
+            host=config.host,
             port=config.hots,
             db=config.db,
             user=config.user,
-            psw=config.psw
+            psw=config.psw,
         )
         self.sql.connect()
-        self.tabl_name = config.file_name.split(".")[0]
+        self.table_name = config.file_name.split(".")[0]
 
-    def run(self)-> None:
-
+    def run(self, columns_to_datetime: list = []) -> None:
         get_file(url=self.config.url, file_name=self.config.file_name)
 
         df_iter = file_to_df_iter(self.config.file_name)
 
         for i in range(len(df_iter)):
-                df = df_iter[i]
-                df_transformed = column_to_datetime(df, )
-                
+            df = df_iter[i]
+            if column_to_datetime:
+                for column in columns_to_datetime:
+                    df = column_to_datetime(df, column)
+
             if i == 0:
-                df_to_sql(df = df_iter[i], name = self.tabl_name, mode= "replace")
+                self.sql.df_to_sql(
+                    df=df_iter[i], table_name=self.table_name, mode="replace"
+                )
             else:
-                df_to_sql(df = )
+                self.sql.df_to_sql(
+                    df=df_iter[i], table_name=self.table_name, mode="append"
+                )

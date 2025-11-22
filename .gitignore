@@ -16,3 +16,8 @@ ny_taxi_postgres_data/
 #UV
 .python-version
 
+#All config direc
+**/config/
+
+#All files direct
+**/files/

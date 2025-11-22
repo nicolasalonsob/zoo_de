@@ -9,12 +9,18 @@ import requests
 from pydantic import BaseModel
 from pathlib import Path
 from loguru import logger
+import yaml
 
 
 class Config(BaseModel):
     url: str
     file_name: str
     file_dir: str
+
+
+def yaml_to_dict(yaml_file_path: str | Path) -> dict:
+    with open(yaml_file_path, "r") as file:
+        return yaml.safe_load(file)
 
 
 def get_file(url: str, file_name: str, destination_path: str) -> None:
